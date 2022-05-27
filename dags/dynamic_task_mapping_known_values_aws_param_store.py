@@ -14,7 +14,7 @@ default_args = {
     }
 
 
-with DAG(dag_id='dynamic_task_mapping_aws_param_store',
+with DAG(dag_id='dynamic_task_mapping_known_values_aws_param_store',
          start_date=datetime(2022, 5, 1),
          schedule_interval='@once',
          default_args=default_args,
