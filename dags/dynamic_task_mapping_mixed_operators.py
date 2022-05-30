@@ -20,10 +20,10 @@ with DAG(dag_id='dynamic_task_mapping_mixed_operators',
          schedule_interval='0 6 * * Mon',  # At 06:00 on Monday
          max_active_runs=2,
          default_args=default_args,
-         tags=['dynamic tak mapping'],
+         tags=['dynamic tak mapping', 'XComs'],
          description='''
              This DAG demonstrates dynamic task mapping based on the result of the upstream task, 
-             and retrieving connections from AWS Parameter Store.
+             and combining both TaskFlow API non-TaskFlow API operators.
          ''',
          ) as dag:
 
