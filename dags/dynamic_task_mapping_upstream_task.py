@@ -21,7 +21,7 @@ with DAG(dag_id='dynamic_task_mapping_upstream_task',
          schedule_interval='@daily',  # Run once a day at midnight (same as 0 0 * * *)
          max_active_runs=2,
          default_args=default_args,
-         tags=['dynamic tak mapping', 'aws s3', 'aws parameter store', 'secrets backend'],
+         tags=['dynamic tak mapping', 'aws s3', 'env vars in Astro UI'],
          description='''
              This DAG demonstrates dynamic task mapping based on the result of the upstream task, 
              and retrieving connections from AWS Parameter Store.
@@ -30,7 +30,7 @@ with DAG(dag_id='dynamic_task_mapping_upstream_task',
 
     @task
     def get_s3_files(current_prefix):
-        s3_hook = S3Hook(aws_conn_id='s3')  # The connection comes from the AWS Parameter Store
+        s3_hook = S3Hook(aws_conn_id='s3')  # The connection is stored in the Astro UI (with prefix AIRFLOW_CONN_)
         current_files = s3_hook.list_keys(bucket_name='astro-onboarding',
                                           prefix=current_prefix + "/",
                                           start_after_key=current_prefix + "/")
