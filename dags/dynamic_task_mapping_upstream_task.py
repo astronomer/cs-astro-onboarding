@@ -6,6 +6,7 @@ from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
 
 default_args = {
+        'owner': 'cs',
         'depends_on_past': False,
         'email_on_failure': False,
         'email_on_retry': False,
@@ -17,7 +18,7 @@ default_args = {
 with DAG(dag_id='dynamic_task_mapping_upstream_task',
          start_date=datetime(2022, 5, 1),
          end_date=datetime(2022, 5, 5),
-         schedule_interval='@daily',
+         schedule_interval='@daily',  # Run once a day at midnight (same as 0 0 * * *)
          max_active_runs=2,
          default_args=default_args,
          tags=['dynamic tak mapping', 'aws s3', 'aws parameter store', 'secrets backend'],

@@ -18,6 +18,7 @@ def random_sum():
 with DAG(dag_id='pools',
          start_date=datetime(2022, 5, 1),
          schedule_interval=None,
+         default_args={'owner': 'cs'},
          tags=['pools', 'chain'],
          description='''
              This DAG demonstrates pools which allow you to limit parallelism

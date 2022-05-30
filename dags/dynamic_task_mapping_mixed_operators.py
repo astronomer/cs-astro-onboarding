@@ -7,6 +7,7 @@ from airflow.operators.bash import BashOperator
 
 
 default_args = {
+        'owner': 'cs',
         'depends_on_past': False,
         'email_on_failure': False,
         'email_on_retry': False,
