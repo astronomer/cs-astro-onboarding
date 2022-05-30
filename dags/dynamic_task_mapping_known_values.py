@@ -14,12 +14,15 @@ default_args = {
     }
 
 
-with DAG(dag_id='dynamic_task_mapping_known_values_aws_param_store',
+with DAG(dag_id='dynamic_task_mapping_known_values',
          start_date=datetime(2022, 5, 1),
          schedule_interval='@once',
          default_args=default_args,
          tags=['dynamic tak mapping', 'aws parameter store', 'secrets backend'],
-         description='This DAG demonstrates dynamic task mapping with a constant parameter, and retrieving variables from AWS Parameter Store.',
+         description='''
+            This DAG demonstrates dynamic task mapping with a constant parameter based on the known values, 
+            and retrieving variables from AWS Parameter Store.
+         ''',
          ) as dag:
 
     @task

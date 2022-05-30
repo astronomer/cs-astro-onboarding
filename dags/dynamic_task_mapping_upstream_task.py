@@ -14,14 +14,17 @@ default_args = {
     }
 
 
-with DAG(dag_id='dynamic_task_mapping_aws_parameter_store_s3',
+with DAG(dag_id='dynamic_task_mapping_upstream_task',
          start_date=datetime(2022, 5, 1),
          end_date=datetime(2022, 5, 5),
          schedule_interval='@daily',
          max_active_runs=2,
          default_args=default_args,
-         tags=['dynamic tak mapping', 'aws s3'],
-         description='This DAG demonstrates dynamic task mapping based on the result of the upstream task.',
+         tags=['dynamic tak mapping', 'aws s3', 'aws parameter store', 'secrets backend'],
+         description='''
+             This DAG demonstrates dynamic task mapping based on the result of the upstream task, 
+             and retrieving connections from AWS Parameter Store.
+         ''',
          ) as dag:
 
     @task
