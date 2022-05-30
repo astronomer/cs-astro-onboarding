@@ -1,0 +1,58 @@
+import random
+from datetime import datetime, timedelta
+
+from airflow import DAG
+from airflow.operators.empty import EmptyOperator
+from airflow.operators.python import BranchPythonOperator
+from airflow.utils.edgemodifier import Label
+
+
+default_args = {
+        'depends_on_past': False,
+        'email_on_failure': False,
+        'email_on_retry': False,
+        'retries': 2,
+        'retry_delay': timedelta(minutes=5),
+    }
+
+
+with DAG(dag_id='branching',
+         start_date=datetime(2022, 5, 1),
+         schedule_interval='0 7 * * Wed',  # At 07:00 on Wednesday
+         max_active_runs=3,
+         default_args=default_args,
+         tags=['branching'],
+         description='''
+             This DAG demonstrates the usage of the BranchPythonOperator.
+         ''',
+         ) as dag:
+
+    start = EmptyOperator(
+        task_id='start',
+    )
+
+    options = ['branch_a', 'branch_b', 'branch_c', 'branch_d']
+
+    branching = BranchPythonOperator(
+        task_id='branching',
+        python_callable=lambda: random.choice(options),
+    )
+
+    start >> branching
+
+    end = EmptyOperator(
+        task_id='end',
+        trigger_rule='none_failed_min_one_success',  # By default, trigger_rule is set to all_success.
+        # Skip caused by the branching operation would cascade down to skip this task as well.
+    )
+
+    for option in options:
+
+        empty_follow = EmptyOperator(
+            task_id=option,
+        )
+
+        # Label() is used in order to label the dependency edges between different tasks in the Graph view
+        # It can be especially useful for branching,
+        # so you can label the conditions under which certain branches might run.
+        branching >> Label(option) >> empty_follow >> end
