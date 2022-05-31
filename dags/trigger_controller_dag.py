@@ -18,8 +18,8 @@ default_args = {
 
 with DAG(dag_id='trigger_controller_dag',
          start_date=datetime(2022, 5, 1),
-         schedule_interval='30 6 * * 2,5',  # At 06:30 on Tuesday and Friday
-         max_active_runs=2,
+         schedule_interval='0 8 * * 2,5',  # At 08:00 on Tuesday and Friday
+         max_active_runs=3,
          default_args=default_args,
          tags=['cross dag dependencies', 'branching'],
          description='''

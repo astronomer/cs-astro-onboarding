@@ -32,6 +32,5 @@ with DAG(dag_id='dynamic_task_mapping_known_values',
 
     # partial(): allows you to pass parameters that remain constant for all tasks
     # expand(): allows you to pass parameters to map over
-    added_values = add.partial(x=int(Variable.get("my_test_variable"))).expand(y=[0, 1, 2])  # Variable comes from the AWS Parameter Store
-
-
+    added_values = add.partial(x=int(Variable.get("my_test_variable"))).expand(y=[0, 1, 2])
+    # Variable comes from the AWS Parameter Store

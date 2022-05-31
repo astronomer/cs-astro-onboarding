@@ -53,7 +53,7 @@ with DAG(dag_id='branching',
             task_id=option,
         )
 
-        # Label() is used in order to label the dependency edges between different tasks in the Graph view
+        # Label() is used in order to label the dependency edges between different tasks in the Graph view.
         # It can be especially useful for branching,
         # so you can label the conditions under which certain branches might run.
         branching >> Label(option) >> empty_follow >> end

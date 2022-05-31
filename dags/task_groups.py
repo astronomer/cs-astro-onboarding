@@ -18,6 +18,7 @@ default_args = {
 with DAG(dag_id='task_groups',
          start_date=datetime(2022, 5, 1),
          schedule_interval='30 7 * * Thu',
+         max_active_runs=3,
          default_args=default_args,
          tags=['task groups'],
          description='''
@@ -31,6 +32,7 @@ with DAG(dag_id='task_groups',
         tg_id = f'group_{g_id}'
         with TaskGroup(group_id=tg_id) as tg1:
             t1 = EmptyOperator(task_id='task1')
+
             t2 = EmptyOperator(task_id='task2')
 
             t1 >> t2
