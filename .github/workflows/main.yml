@@ -1,12 +1,11 @@
-name: Astronomer CI - Deploy Code
+name: Astronomer CI/CD
 
 on:
   push:
     branches:
-      - main
+      - master
 
 env:
-  ## Sets Deployment API key credentials as environment variables
   ASTRONOMER_KEY_ID: ${{ secrets.ASTRONOMER_KEY_ID }}
   ASTRONOMER_KEY_SECRET: ${{ secrets.ASTRONOMER_KEY_SECRET }}
 
