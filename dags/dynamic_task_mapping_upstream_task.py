@@ -24,7 +24,7 @@ with DAG(dag_id='dynamic_task_mapping_upstream_task',
          tags=['dynamic tak mapping', 'aws s3', 'env vars in Astro UI'],
          description='''
              This DAG demonstrates dynamic task mapping based on the result of the upstream task, 
-             and retrieving connections from AWS Parameter Store.
+             and storing connections in the Astro UI. 
          ''',
          ) as dag:
 
