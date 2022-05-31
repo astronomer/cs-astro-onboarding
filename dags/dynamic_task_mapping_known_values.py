@@ -30,8 +30,8 @@ with DAG(dag_id='dynamic_task_mapping_known_values',
     def add(x, y):
         return x + y
 
-    CONSTANT_VALUE = Variable.get("my_test_variable")  # Variable comes from the AWS Parameter Store
+    CONSTANT_VALUE = int(Variable.get("my_test_variable"))  # Variable comes from the AWS Parameter Store
 
     # partial(): allows you to pass parameters that remain constant for all tasks
     # expand(): allows you to pass parameters to map over
-    added_values = add.partial(x=int(CONSTANT_VALUE)).expand(y=[0, 1, 2])
+    added_values = add.partial(x=CONSTANT_VALUE).expand(y=[0, 1, 2])
