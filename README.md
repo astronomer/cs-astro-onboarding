@@ -1,7 +1,7 @@
 Overview
 ========
 
-Welcome to Astronomer! This project was generated with `astrocloud dev init` using the Astronomer CLI. This README describes the contents of the project, as well as how to run Apache Airflow on your local machine.
+Welcome to Astronomer! This project was generated with `astro dev init` using the Astronomer CLI. This README describes the contents of the project, as well as how to run Apache Airflow on your local machine.
 
 Project Contents
 ================
@@ -19,7 +19,7 @@ Your Astronomer project contains the following files and folders:
 Deploy Your Project Locally
 ===========================
 
-1. Start Airflow on your local machine by running `astrocloud dev start`.
+1. Start Airflow on your local machine by running `astro dev start`.
 
 This command will spin up 4 Docker containers on your machine, each for a different Airflow component:
 
@@ -30,11 +30,11 @@ This command will spin up 4 Docker containers on your machine, each for a differ
 
 2. Verify that all 4 Docker containers were created by running 'docker ps'.
 
-Note: Running `astrocloud dev start` will start your project with the Airflow Webserver exposed at port 8080 and Postgres exposed at port 5432. If you already have either of those ports allocated, you can either stop your existing Docker containers or change the port.
+Note: Running `astro dev start` will start your project with the Airflow Webserver exposed at port 8080 and Postgres exposed at port 5432. If you already have either of those ports allocated, you can either stop your existing Docker containers or change the port.
 
-3. Access the Airflow UI for your local Airflow project. To do so, go to http://localhost:8080/ and log in with 'admin' for both your Username and Password.
+3. Access the Airflow UI for your local Airflow project. To do so, go to http://localhost:8080/ and log in with `admin` for both your Username and Password.
 
-You should also be able to access your Postgres Database at 'localhost:5432/postgres'.
+You should also be able to access your Postgres Database at localhost:5432/postgres.
 
 Deploy Your Project to Astronomer
 =================================

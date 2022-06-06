@@ -17,5 +17,5 @@ jobs:
       uses: actions/checkout@v2.3.4
     - name: Deploy to Astro
       run: |
-        brew install astronomer/cloud/astrocloud
-        astrocloud deploy ${{ secrets.ASTRONOMER_DEPLOYMENT_ID }}
+        brew install astronomer/tap/astro
+        astro deploy ${{ secrets.ASTRONOMER_DEPLOYMENT_ID }} -f
