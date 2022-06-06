@@ -1,4 +1,5 @@
 .git
 .env
+.idea/
 airflow_settings.yaml
 astrocloud
