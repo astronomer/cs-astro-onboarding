@@ -58,11 +58,13 @@ default_args = {
 with DAG(
     dag_id="s3_in_memory_files",
     start_date=datetime(2021, 12, 1),
+    schedule_interval=None,
     default_args=default_args,
     description='''
         This DAG demonstrates how to upload & download S3 objects in memory.
     ''',
-    catchup=False
+    catchup=False,
+    tags=["aws s3"]
 ) as dag:
 
     start, finish = [EmptyOperator(task_id=tid) for tid in ['start', 'finish']]
