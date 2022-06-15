@@ -28,7 +28,10 @@ with DAG(
         max_active_runs=3,
         schedule_interval=None,
         template_searchpath="/usr/local/airflow/include/http_api_example_dag/",
-        tags=["REST API", "aws s3", "snowflake", "ELT"]
+        tags=["REST API", "aws s3", "snowflake", "ELT"],
+        description=f"""
+            Extracts data from calendarific api to s3 and then from s3 to snowflake as a json. Data is transformed in Snowflake from json to sql table.
+        """
     ) as dag:
 
     start, finish = [EmptyOperator(task_id=tid) for tid in ['start', 'finish']]
