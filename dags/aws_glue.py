@@ -1,7 +1,7 @@
 docs = """
     The operators use aws_default connection - make sure to add it, see docs:
     https://airflow.apache.org/docs/apache-airflow-providers-amazon/stable/connections/aws.html
-    Additionally, you need to create a role with utobject/getobject access to the bucket,
+    Additionally, you need to create a role with putobject/getobject access to the bucket,
     as well as the glue service role, see docs here: https://docs.aws.amazon.com/glue/latest/dg/create-an-iam-role.html
 """
 
@@ -92,6 +92,7 @@ with DAG(
     default_args=default_args,
     tags=['aws glue', 'aws s3'],
     catchup=False,
+    doc_md=docs,
 ) as glue_dag:
 
     setup_upload_artifacts_to_s3 = upload_artifacts_to_s3()
