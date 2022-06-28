@@ -2,4 +2,5 @@
 .env
 .idea/
 airflow_settings.yaml
-astrocloud
+astro
+include/__pycache__/
