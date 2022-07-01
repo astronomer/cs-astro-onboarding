@@ -35,7 +35,6 @@ def get_dags():
 	"""
 	with suppress_logging('airflow') :
 		dag_bag = DagBag(include_examples=False)
-
 	def strip_path_prefix(path):
 		return os.path.relpath(path ,os.environ.get('AIRFLOW_HOME'))
 	return [ (k,v,strip_path_prefix(v.fileloc)) for k,v in dag_bag.dags.items()]
@@ -45,25 +44,38 @@ def test_file_imports(rel_path,rv):
 	""" Test for import errors on a file """
 	if rel_path and rv :
 			raise Exception(f"{rel_path} failed to import with message \n {rv}")
-	
 
-
-APPROVED_TAGS = {}
+APPROVED_TAGS = {
+	"aws glue",
+	"aws parameter store",
+	"aws redshift",
+	"aws s3",
+	"backfill",
+	"bigquery",
+	"branching",
+	"chain",
+	"cross dag dependencies",
+	"databricks",
+	"dynamic task mapping",
+	"env vars in Astro UI",
+	"ELT",
+	"gcp",
+	"google drive",
+	"pools",
+	"REST API",
+	"secrets backend",
+	"sla",
+	"slack",
+	"snowflake",
+	"task groups",
+	"XComs"
+}
 
 @pytest.mark.parametrize("dag_id,dag,fileloc", get_dags(), ids=[x[2] for x in get_dags()])
-def test_dag_tags(dag_id,dag, fileloc):
+def test_dag_tags(dag_id, dag, fileloc):
 	"""
 	test if a DAG is tagged and if those TAGs are in the approved list
 	"""
 	assert dag.tags, f"{dag_id} in {fileloc} has no tags"
 	if APPROVED_TAGS:
 		assert not set(dag.tags) - APPROVED_TAGS
-
-
-
-@pytest.mark.parametrize("dag_id,dag, fileloc", get_dags(), ids=[x[2] for x in get_dags()])
-def test_dag_retries(dag_id,dag, fileloc):
-	"""
-	test if a DAG has retries set
-	"""
-	assert dag.default_args.get('retries', None) > 2 , f"{dag_id} in {fileloc} does not have retries not set to 2."

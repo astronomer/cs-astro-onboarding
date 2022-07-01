@@ -18,7 +18,7 @@ with DAG(dag_id='backfill',
          start_date=datetime(2022, 5, 1),
          schedule_interval=None,
          default_args=default_args,
-         tags=['backfill', 'stable REST API'],
+         tags=['backfill', 'REST API'],
          description='''
             This DAG demonstrates backfilling using the stable REST API. 
          ''',
