@@ -15,6 +15,13 @@ jobs:
     steps:
     - name: checkout repo
       uses: actions/checkout@v2.3.4
+    - name: Open PR on master
+      uses: repo-sync/pull-request@v2
+      with:
+        destination_branch: "master",
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        pr_label: "feature, automated pr"
+        pr_title: "[Example] Simple demo"
     - name: Deploy to Astro
       run: |
         curl -sSL install.astronomer.io | sudo bash -s
@@ -33,3 +40,4 @@ jobs:
       run: |
         curl -sSL install.astronomer.io | sudo bash -s
         astro deploy ${{ secrets.ASTRONOMER_DEPLOYMENT_ID }}
+
