@@ -22,8 +22,6 @@ these variables are here as top-level code for this demonstration which is again
 cluster_identifier = 'astronomer-success-redshift'
 s3_bucket = 'astro-onboarding'
 
-# Add a comment to test code promotion process.
-
 with DAG(
     dag_id="redshift_example_dag",
     schedule_interval=None,
