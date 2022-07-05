@@ -17,12 +17,12 @@ A multi-branch CICD process with branch protection rules has been incorporated w
 7. Request a review from a CSE (this isn't enforced by branch protection rules - in the event you are demo'ing this process for a customer)
 8. Upon approval of the review, merge your feature branch to `dev` this will initiate a GitHub Action that performs the following:
 
-    - Deploy changes to this Dev Environment
+    - Deploy changes to [this Dev Environment](https://cloud.astronomer.io/cl1vvhd0c85301fyobcagec1c/deployments/cl530xesf295741i1cg7jpjgnt)
     - Opens a new PR from `dev` to `master`
 
 9. Review the new PR to `master` by ensuring the changes didn't break the Dev Deployment
 10. Upon successful inspection of the Dev Deployment, merge the PR into `master` this will initiate a GitHub Action that performs the following:
 
-    - Deploy changes to this Prod Environment
+    - Deploy changes to [this Prod Environment](https://cloud.astronomer.io/cl1vvhd0c85301fyobcagec1c/deployments/cl3sutkeb118541hynkfcnlnmk)
 
 ![cicd_demo](https://user-images.githubusercontent.com/31361051/177388711-6e9bc598-b5eb-4fd4-b445-cacf0e4d2fd2.png)
