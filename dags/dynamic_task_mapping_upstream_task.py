@@ -21,7 +21,7 @@ with DAG(dag_id='dynamic_task_mapping_upstream_task',
          schedule_interval='@daily',  # Run once a day at midnight (same as 0 0 * * *)
          max_active_runs=3,
          default_args=default_args,
-         tags=['dynamic tak mapping', 'aws s3', 'env vars in Astro UI'],
+         tags=['dynamic task mapping', 'aws s3', 'env vars in Astro UI'],
          description='''
              This DAG demonstrates dynamic task mapping based on the result of the upstream task, 
              and storing connections in the Astro UI. 
