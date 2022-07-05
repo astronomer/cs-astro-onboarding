@@ -16,8 +16,13 @@ A multi-branch CICD process with branch protection rules has been incorporated w
 6. Navigate to [this repository](https://github.com/astronomer/cs-astro-onboarding/) on GitHub via a web browser and open a PR from your feature branch to the `dev` branch
 7. Request a review from a CSE (this isn't enforced by branch protection rules - in the event you are demo'ing this process for a customer)
 8. Upon approval of the review, merge your feature branch to `dev` this will initiate a GitHub Action that performs the following:
-  a. Deploy changes to this Dev Environment
-  b. Opens a new PR from `dev` to `master`
+
+    - Deploy changes to this Dev Environment
+    - Opens a new PR from `dev` to `master`
+
 9. Review the new PR to `master` by ensuring the changes didn't break the Dev Deployment
 10. Upon successful inspection of the Dev Deployment, merge the PR into `master` this will initiate a GitHub Action that performs the following:
-  a. Deploy changes to this Prod Environment
+
+    - Deploy changes to this Prod Environment
+
+![cicd_demo](https://user-images.githubusercontent.com/31361051/177388711-6e9bc598-b5eb-4fd4-b445-cacf0e4d2fd2.png)
