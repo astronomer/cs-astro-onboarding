@@ -13,14 +13,15 @@ jobs:
       ASTRONOMER_KEY_SECRET: ${{ secrets.DEV_ASTRONOMER_KEY_SECRET }}
     runs-on: ubuntu-latest
     steps:
-    - name: checkout repo
+    - name: Checkout Repo
       uses: actions/checkout@v2.3.4
-    - name: pull-request
+    - name: Create PR on Master
       uses: repo-sync/pull-request@v2
       with:
         destination_branch: "master"
-        pr_title: "Pulling ${{ github.event.head_commit.message }} into main"
+        pr_title: "${{ github.event.head_commit.message }}"
         pr_body: "👑 *An automated PR*"
+        pr_assignee: "{{ github.event.pusher.email }}"
         pr_draft: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
     - name: Deploy to Astro
@@ -35,7 +36,7 @@ jobs:
       ASTRONOMER_KEY_SECRET: ${{ secrets.ASTRONOMER_KEY_SECRET }}
     runs-on: ubuntu-latest
     steps:
-    - name: checkout repo
+    - name: Checkout Repo
       uses: actions/checkout@v2.3.4
     - name: Deploy to Astro
       run: |
