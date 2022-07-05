@@ -16,6 +16,7 @@ jobs:
     - name: checkout repo
       uses: actions/checkout@v2.3.4
     - name: pull-request
+      uses: repo-sync/pull-request@v2
       with:
         destination_branch: "master"
         pr_title: "Pulling ${{ github.ref }} into main"
