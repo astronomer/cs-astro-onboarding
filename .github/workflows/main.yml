@@ -21,7 +21,6 @@ jobs:
         destination_branch: "master"
         pr_title: "${{ github.event.head_commit.message }}"
         pr_body: "👑 *An automated PR*"
-        pr_assignee: "{{ github.event.push.user.login }}"
         pr_draft: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
     - name: Deploy to Astro
