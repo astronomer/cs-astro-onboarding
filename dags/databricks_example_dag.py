@@ -1,4 +1,5 @@
 from airflow import DAG
+from airflow.models.variable import Variable
 from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
 from airflow.utils.task_group import TaskGroup
@@ -27,10 +28,6 @@ Notes
     (on extra replace the xxxx in host with the url in your databricks instance and generate a token through the 
     databricks UI under Settings >> User Settings
 '''
-
-job_id = 39413385355451 #grabbed this from the databricks UI. Represents a job that is using a notebook that has a hello world application
-run_id = 753 #represents a run of job 9.
-cluster_id = "0607-225421-o7nd42zd" #created a "default_cluster" as an All-Purpose Cluster
 
 new_cluster = {
     "num_workers": 0,
@@ -78,7 +75,7 @@ with DAG(
         task_id="python_start_cluster",
         python_callable=DatabricksUtil().start_cluster,
         op_kwargs={
-            "cluster_id": cluster_id
+            "cluster_id": "{{var.value.databricks_cluster_id}}"
         }
     )
 
@@ -90,7 +87,7 @@ with DAG(
             task_id="python_restart_cluster",
             python_callable=DatabricksUtil().restart_cluster,
             op_kwargs={
-                "cluster_id": cluster_id
+                "cluster_id": "{{var.value.databricks_cluster_id}}"
             }
         )
 
@@ -100,7 +97,7 @@ with DAG(
             python_callable=DatabricksUtil().install,
             op_kwargs={
                 "json": {
-                    "cluster_id": cluster_id,
+                    "cluster_id": "{{var.value.databricks_cluster_id}}",
                     "libraries": [{
                         "pypi": {
                             "package": "requests"
@@ -116,7 +113,7 @@ with DAG(
         #     python_callable=DatabricksUtil().uninstall,
         #     op_kwargs={
         #         "json": {
-        #             "cluster_id": cluster_id,
+        #             "cluster_id": "{{var.value.databricks_cluster_id}}",
         #             "libraries": [{
         #                     "pypi": {
         #                         "package": "requests"
@@ -132,9 +129,7 @@ with DAG(
         # runs a job that is already assigned to an existing all purpose cluster
         opr_run_now = DatabricksRunNowOperatorAsync(
             task_id="databricks_run_now",
-            databricks_conn_id="databricks_default",
-            job_id=str(job_id),
-            # on_execute_callback=databricks_callback
+            job_id="{{ var.value.databricks_job_id }}",
         )
 
         #spins up a new cluster and runs a job - to see the cluster look at the "Job Clusters" tab in Databricks UI
@@ -143,7 +138,7 @@ with DAG(
             json={
                 'new_cluster': new_cluster,
                 'notebook_task': {
-                    'notebook_path': '/Users/chronek@astronomer.io/hello_world'
+                    'notebook_path': "{{ var.value.databricks_notebook_path }}"
                 }
             }
         )
@@ -154,7 +149,7 @@ with DAG(
             task_id="python_get_run_page_url",
             python_callable=DatabricksUtil().get_run_page_url,
             op_kwargs={
-                "run_id": str(run_id)
+                "run_id": "{{ var.value.databricks_run_id }}"
             }
         )
 
@@ -163,7 +158,7 @@ with DAG(
             task_id="python_get_job_id",
             python_callable=DatabricksUtil().get_job_id,
             op_kwargs={
-                "run_id": str(run_id)
+                "run_id": "{{ var.value.databricks_run_id }}"
             }
         )
 
@@ -174,7 +169,7 @@ with DAG(
             task_id="python_get_run_state",
             python_callable=DatabricksUtil().get_run_state,
             op_kwargs={
-                "run_id": str(run_id)
+                "run_id": "{{ var.value.databricks_run_id }}"
             }
         )
 
@@ -191,7 +186,7 @@ with DAG(
         task_id="python_terminate_cluster",
         python_callable=DatabricksUtil().terminate_cluster,
         op_kwargs={
-            "cluster_id": cluster_id
+            "cluster_id": "{{var.value.databricks_cluster_id}}"
         }
     )
 
