@@ -31,7 +31,10 @@ with DAG(
     max_active_runs=1,
     template_searchpath='/usr/local/airflow/include/redshift_example_dag',
     tags=["aws redshift"],
-    catchup=True
+    catchup=True,
+    default_args={
+        "owner": "cs"
+    },
 ) as dag:
 
     start, finish = [EmptyOperator(task_id=tid) for tid in ['start', 'finish']]
