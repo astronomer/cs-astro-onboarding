@@ -1,12 +1,14 @@
 import json
 import io
+from datetime import datetime
+
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
 from airflow.providers.snowflake.operators.snowflake import SnowflakeOperator
 from airflow.providers.http.operators.http import SimpleHttpOperator
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-from datetime import datetime
+
 
 def upload_json_to_s3(xcom_task_id, bucket_name, key="out", replace=True, **context):
     json_dict = context['ti'].xcom_pull(task_ids=f'{xcom_task_id}')

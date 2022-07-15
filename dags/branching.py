@@ -1,5 +1,4 @@
 import random
-import time
 from datetime import datetime, timedelta
 
 from airflow import DAG
@@ -9,6 +8,8 @@ from airflow.utils.edgemodifier import Label
 
 
 def sleep_fun():
+    import time
+
     print("Task is sleeping.")
     time.sleep(10)
 

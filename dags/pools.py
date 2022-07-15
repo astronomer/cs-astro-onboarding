@@ -1,5 +1,3 @@
-import random
-import time
 from datetime import datetime
 
 from airflow import DAG
@@ -9,6 +7,9 @@ from airflow.operators.python import PythonOperator
 
 
 def random_sum():
+    import random
+    import time
+
     r = random.randint(0, 100)
     add_random = 2 + r
     print(add_random)

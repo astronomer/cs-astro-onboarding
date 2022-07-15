@@ -19,14 +19,17 @@ project_id = "astronomer-success"
 dataset_id = "public_data"
 
 with DAG(
-    dag_id=f"bigquery_example_dag",
+    dag_id="bigquery_example_dag",
     schedule_interval="@daily",
     start_date=datetime(2016, 12, 31), #data starts 1/1/2014, but just using a week for quick poc
     end_date=datetime(2016, 12, 31),
     max_active_runs=1,
     template_searchpath="/usr/local/airflow/include/bigquery_example_dag/",
     tags=["bigquery"],
-    catchup=True
+    catchup=True,
+    default_args={
+        "owner": "cs"
+    },
 ) as dag:
 
     start, finish = [DummyOperator(task_id=tid) for tid in ['start', 'finish']]
