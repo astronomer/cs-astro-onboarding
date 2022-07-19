@@ -45,7 +45,7 @@ class NoPublicHolidaysTimetable(Timetable):  # If it's a public holiday - do not
         return DagRunInfo.interval(start=next_start, end=(next_start + timedelta(days=1)))
 
     def infer_manual_data_interval(self, run_after: DateTime) -> DataInterval:
-        run_after = run_after - timedelta(days=1)
+        run_after = DateTime.combine(run_after.date() - timedelta(days=1), Time.min).replace(tzinfo=UTC)
         current_year = run_after.year
         holidays_dates = list(holidays.country_holidays(COUNTRY, years=current_year).keys())
         holidays_dt = [DateTime.combine(h, Time.min).replace(tzinfo=UTC) for h in holidays_dates]
