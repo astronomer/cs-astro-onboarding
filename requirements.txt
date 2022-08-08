@@ -3,4 +3,5 @@ apache-airflow-providers-databricks==2.7.0
 apache-airflow-providers-google==7.0.0
 apache-airflow-providers-http==3.0.0
 apache-airflow-providers-slack==4.2.3
-astronomer-providers[databricks]
+astronomer-providers[all]
+holidays
