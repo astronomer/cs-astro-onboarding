@@ -23,10 +23,20 @@ jobs:
         pr_body: "👑 *An automated PR*"
         pr_draft: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create image tag
+      id: image_tag
+      run: echo ::set-output name=image_tag::astro-$(date +%Y%m%d%H%M%S)
+    - name: Build image
+      uses: docker/build-push-action@v2
+      with:
+        tags: ${{ steps.image_tag.outputs.image_tag }}
+        load: true
+        build-args: |
+          PIP_EXTRA_INDEX_URL=git+https://${{ secrets.PAT }}@github.com/astronomer/cse-private-packages.git
     - name: Deploy to Astro
       run: |
         curl -sSL install.astronomer.io | sudo bash -s
-        astro deploy ${{ secrets.DEV_ASTRONOMER_DEPLOYMENT_ID }} -f
+        astro deploy ${{ secrets.DEV_ASTRONOMER_DEPLOYMENT_ID }} --image-name ${{ steps.image_tag.outputs.image_tag }} -f
   prod-push:
     if: github.ref == 'refs/heads/master'
     env:
@@ -37,8 +47,17 @@ jobs:
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v2.3.4
+    - name: Create image tag
+      id: image_tag
+      run: echo ::set-output name=image_tag::astro-$(date +%Y%m%d%H%M%S)
+    - name: Build image
+      uses: docker/build-push-action@v2
+      with:
+        tags: ${{ steps.image_tag.outputs.image_tag }}
+        load: true
+        build-args: |
+          PIP_EXTRA_INDEX_URL=git+https://${{ secrets.PAT }}@github.com/astronomer/cse-private-packages.git
     - name: Deploy to Astro
       run: |
         curl -sSL install.astronomer.io | sudo bash -s
-        astro deploy ${{ secrets.ASTRONOMER_DEPLOYMENT_ID }} -f
-
+        astro deploy ${{ secrets.ASTRONOMER_DEPLOYMENT_ID }} --image-name ${{ steps.image_tag.outputs.image_tag }} -f
