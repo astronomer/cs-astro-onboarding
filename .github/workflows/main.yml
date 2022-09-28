@@ -2,31 +2,32 @@ name: Astronomer CI - Deploy code (Multiple Branches)
 
 on:
   push:
-    branches: [dev, master]
+    branches: master
 
 jobs:
-  dev-push:
-    if: github.ref == 'refs/heads/dev'
-    env:
-      ## Sets DEV Deployment API key credentials as environment variables
-      ASTRONOMER_KEY_ID: ${{ secrets.DEV_ASTRONOMER_KEY_ID }}
-      ASTRONOMER_KEY_SECRET: ${{ secrets.DEV_ASTRONOMER_KEY_SECRET }}
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout Repo
-      uses: actions/checkout@v2.3.4
-    - name: Create PR on Master
-      uses: repo-sync/pull-request@v2
-      with:
-        destination_branch: "master"
-        pr_title: "${{ github.event.head_commit.message }}"
-        pr_body: "👑 *An automated PR*"
-        pr_draft: true
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Deploy to Astro
-      run: |
-        curl -sSL install.astronomer.io | sudo bash -s
-        astro deploy ${{ secrets.DEV_ASTRONOMER_DEPLOYMENT_ID }} -f
+# please don't remove commented block - talk to Chris Hronek
+#   dev-push:
+#     if: github.ref == 'refs/heads/dev'
+#     env:
+#       ## Sets DEV Deployment API key credentials as environment variables
+#       ASTRONOMER_KEY_ID: ${{ secrets.DEV_ASTRONOMER_KEY_ID }}
+#       ASTRONOMER_KEY_SECRET: ${{ secrets.DEV_ASTRONOMER_KEY_SECRET }}
+#     runs-on: ubuntu-latest
+#     steps:
+#     - name: Checkout Repo
+#       uses: actions/checkout@v2.3.4
+#     - name: Create PR on Master
+#       uses: repo-sync/pull-request@v2
+#       with:
+#         destination_branch: "master"
+#         pr_title: "${{ github.event.head_commit.message }}"
+#         pr_body: "👑 *An automated PR*"
+#         pr_draft: true
+#         github_token: ${{ secrets.GITHUB_TOKEN }}
+#     - name: Deploy to Astro
+#       run: |
+#         curl -sSL install.astronomer.io | sudo bash -s
+#         astro deploy ${{ secrets.DEV_ASTRONOMER_DEPLOYMENT_ID }} -f
   prod-push:
     if: github.ref == 'refs/heads/master'
     env:
