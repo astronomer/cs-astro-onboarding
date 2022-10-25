@@ -58,7 +58,7 @@ default_args = {
 
 with DAG(
     dag_id="s3_in_memory_files",
-    start_date=pendulum.datetime(2022, 12, 1, tz='UTC'),
+    start_date=pendulum.datetime(2021, 12, 1, tz='UTC'),
     schedule=None,
     default_args=default_args,
     description="This DAG demonstrates how to upload & download S3 objects in memory.",

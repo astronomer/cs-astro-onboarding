@@ -1,7 +1,6 @@
 import json
 import io
 import pendulum
-from datetime import timedelta
 
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator

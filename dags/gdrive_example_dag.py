@@ -1,7 +1,6 @@
 import json
 import pendulum
 import re
-from datetime import timedelta
 
 from airflow import DAG
 from airflow.hooks.base import BaseHook
