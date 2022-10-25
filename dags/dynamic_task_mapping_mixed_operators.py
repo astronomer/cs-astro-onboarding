@@ -18,7 +18,7 @@ default_args = {
 
 with DAG(
     dag_id='dynamic_task_mapping_mixed_operators',
-    start_date=pendulum.datetime(2022, 5, 5, tz='UTC'),
+    start_date=pendulum.datetime(2022, 5, 1, tz='UTC'),
     schedule='0 6 * * Mon',  # At 06:00 on Monday
     max_active_runs=3,
     default_args=default_args,
