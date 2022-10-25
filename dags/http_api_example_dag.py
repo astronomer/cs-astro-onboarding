@@ -1,6 +1,7 @@
 import json
 import io
-from datetime import datetime
+import pendulum
+from datetime import timedelta
 
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
@@ -25,18 +26,19 @@ def upload_json_to_s3(xcom_task_id, bucket_name, key="out", replace=True, **cont
         )
 
 with DAG(
-        dag_id='http_api_example_dag',
-        start_date=datetime(2022, 6, 14),
-        max_active_runs=3,
-        schedule_interval=None,
-        template_searchpath="/usr/local/airflow/include/http_api_example_dag/",
-        tags=["REST API", "aws s3", "snowflake", "ELT"],
-        description=f"""
-            Extracts data from calendarific api to s3 and then from s3 to snowflake as a json. Data is transformed in Snowflake from json to sql table.
-        """
-    ) as dag:
+    dag_id="http_api_example_dag",
+    start_date=pendulum.datetime(2022, 6, 14, tz='UTC'),
+    max_active_runs=3,
+    schedule=None,
+    template_searchpath="/usr/local/airflow/include/http_api_example_dag/",
+    tags=["REST API", "aws s3", "snowflake", "ELT"],
+    description=f"""
+        Extracts data from calendarific api to s3 and then from s3 to snowflake as a json. 
+        Data is transformed in Snowflake from json to sql table.
+    """
+):
 
-    start, finish = [EmptyOperator(task_id=tid) for tid in ['start', 'finish']]
+    start, finish = [EmptyOperator(task_id=tid) for tid in ["start", "finish"]]
 
     t1 = SimpleHttpOperator(
         # https://calendarific.com/api-documentation
@@ -50,7 +52,7 @@ with DAG(
             "country": "US",
             "year": "2019"
         },
-        response_filter=lambda response: response.json()['response']['holidays']
+        response_filter=lambda response: response.json()["response"]["holidays"]
     )
 
     t2 = PythonOperator(
@@ -65,8 +67,8 @@ with DAG(
     )
 
     t3 = SnowflakeOperator(
-        task_id=f"copy_full_holidays_to_snowflake",
-        sql=f"sql/calendarific_holidays_2019.sql",
+        task_id="copy_full_holidays_to_snowflake",
+        sql="sql/calendarific_holidays_2019.sql",
         params={
             "schema_name": "demo",
             "table_name": "calendarific_holidays_2019"
@@ -75,7 +77,7 @@ with DAG(
 
     t4 = SnowflakeOperator(
         task_id="calendarific_holidays_2019_transformed",
-        sql=f"sql/calendarific_holidays_2019_transformed.sql"
+        sql="sql/calendarific_holidays_2019_transformed.sql"
     )
 
     start >> t1 >> t2 >> t3 >> t4 >> finish

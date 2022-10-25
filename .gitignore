@@ -5,3 +5,5 @@ airflow_settings.yaml
 astro
 include/__pycache__/
 plugins/__pycache__/
+dags/__pycache__/
+include/external_deployment/__pycache__/

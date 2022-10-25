@@ -1,4 +1,5 @@
-from datetime import datetime
+import pendulum
+from datetime import timedelta
 
 from airflow import DAG
 from airflow.models.baseoperator import chain
@@ -16,16 +17,14 @@ def random_sum():
     time.sleep(15)
 
 
-with DAG(dag_id='pools',
-         start_date=datetime(2022, 5, 1),
-         schedule_interval=None,
-         default_args={'owner': 'cs'},
-         tags=['pools', 'chain'],
-         description='''
-             This DAG demonstrates pools which allow you to limit parallelism
-             for an arbitrary set ot tasks.
-         ''',
-         ) as dag:
+with DAG(
+    dag_id='pools',
+    start_date=pendulum.datetime(2022, 5, 1, tz='UTC'),
+    schedule=None,
+    default_args={'owner': 'cs'},
+    tags=['pools', 'chain'],
+    description='This DAG demonstrates pools which allow you to limit parallelism for an arbitrary set ot tasks.',
+):
 
     sum1 = PythonOperator(task_id='sum1', python_callable=random_sum, pool='pool_2')  # pool_2 is set to 1
 
