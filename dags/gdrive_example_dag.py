@@ -1,6 +1,6 @@
 import json
+import pendulum
 import re
-from datetime import datetime
 
 from airflow import DAG
 from airflow.hooks.base import BaseHook
@@ -9,8 +9,8 @@ from airflow.operators.python import PythonOperator
 
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
-
 # from airflow.providers.google.suite.hooks.drive import GoogleDriveHook
+
 
 def list_directory_contents(folder_id, ti, gcp_conn_id="google_cloud_default"):
     # I don't think you can pass scopes to this hook, so I just stole the auth process from it
@@ -46,22 +46,20 @@ def list_directory_contents(folder_id, ti, gcp_conn_id="google_cloud_default"):
 
 
 default_args = {
-        'owner': 'cs',
-        'depends_on_past': False
-    }
+    'owner': 'cs',
+    'depends_on_past': False
+}
 
 
 with DAG(
-        dag_id='gdrive_example_dag',
-        start_date=datetime(2022, 5, 1),
-        schedule_interval=None,
-        max_active_runs=3,
-        default_args=default_args,
-        tags=['gcp', 'google drive'],
-        description='''
-             This DAG demonstrates the usage of the GoogleDriveHook
-         ''',
-    ) as dag:
+    dag_id='gdrive_example_dag',
+    start_date=pendulum.datetime(2022, 5, 1, tz='UTC'),
+    schedule=None,
+    max_active_runs=3,
+    default_args=default_args,
+    tags=['gcp', 'google drive'],
+    description='This DAG demonstrates the usage of the GoogleDriveHook.',
+):
 
     start, finish = [EmptyOperator(task_id=tid) for tid in ['start', 'finish']]
 
@@ -69,7 +67,7 @@ with DAG(
         task_id='list_directory_contents',
         python_callable=list_directory_contents,
         op_kwargs={
-            "folder_id": "1o4l7lmCTeIOXRhWItK1mmrbz5WgGiOYq"
+            'folder_id': '1o4l7lmCTeIOXRhWItK1mmrbz5WgGiOYq'
         }
     )
 

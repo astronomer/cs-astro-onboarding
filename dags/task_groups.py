@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+import pendulum
+from datetime import timedelta
 
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
@@ -6,25 +7,24 @@ from airflow.utils.task_group import TaskGroup
 
 
 default_args = {
-        'owner': 'cs',
-        'depends_on_past': False,
-        'email_on_failure': False,
-        'email_on_retry': False,
-        'retries': 2,
-        'retry_delay': timedelta(minutes=5),
-    }
+    'owner': 'cs',
+    'depends_on_past': False,
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 2,
+    'retry_delay': timedelta(minutes=5),
+}
 
 
-with DAG(dag_id='task_groups',
-         start_date=datetime(2022, 5, 1),
-         schedule_interval='30 7 * * Thu',
-         max_active_runs=3,
-         default_args=default_args,
-         tags=['task groups'],
-         description='''
-            This DAG demonstrates task groups - a UI grouping concept.
-         ''',
-         ) as dag:
+with DAG(
+        dag_id='task_groups',
+        start_date=pendulum.datetime(2022, 5, 1, tz='UTC'),
+        schedule='30 7 * * Thu',
+        max_active_runs=3,
+        default_args=default_args,
+        tags=['task groups'],
+        description=' This DAG demonstrates task groups - a UI grouping concept.',
+):
 
     groups = []
 

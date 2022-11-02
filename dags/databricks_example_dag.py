@@ -1,16 +1,4 @@
-from airflow import DAG
-from airflow.models.variable import Variable
-from airflow.operators.empty import EmptyOperator
-from airflow.operators.python import PythonOperator
-from airflow.utils.task_group import TaskGroup
-from astronomer.providers.databricks.operators.databricks import (
-    DatabricksRunNowOperatorAsync,
-    DatabricksSubmitRunOperatorAsync
-)
-from datetime import datetime
-from include.databricks_tools import DatabricksUtil
-
-'''
+docs = """
 Notes
 - This example dag is using all known operators and hook methods for Databricks as of 11/1/21
 - DatabricksSubmitRunOperator = DatabricksHook.submit_run & DatabricksRunNowOperator = DatabricksHook.run_now 
@@ -27,7 +15,22 @@ Notes
     -  extra: {"host": "https://adb-xxxx.azuredatabricks.net/", "token": "<databricks_token>"}
     (on extra replace the xxxx in host with the url in your databricks instance and generate a token through the 
     databricks UI under Settings >> User Settings
-'''
+"""
+
+import pendulum
+
+from airflow import DAG
+from airflow.models.variable import Variable
+from airflow.operators.empty import EmptyOperator
+from airflow.operators.python import PythonOperator
+from airflow.utils.task_group import TaskGroup
+from astronomer.providers.databricks.operators.databricks import (
+    DatabricksRunNowOperatorAsync,
+    DatabricksSubmitRunOperatorAsync
+)
+
+from include.databricks_tools import DatabricksUtil
+
 
 new_cluster = {
     "num_workers": 0,
@@ -59,16 +62,17 @@ new_cluster = {
 
 # Using a DAG context manager, you don't have to specify the dag property of each task
 with DAG(
-        dag_id='databricks_example_dag',
-        start_date=datetime(2022, 6, 1),
-        default_args={
-            "owner": "cs"
-        },
-        max_active_runs=3,
-        schedule_interval=None,
-        catchup=False,
-        tags=["databricks"]
-) as dag:
+    dag_id="databricks_example_dag",
+    start_date=pendulum.datetime(2022, 6, 1, tz='UTC'),
+    default_args={
+        "owner": "cs"
+    },
+    max_active_runs=3,
+    schedule=None,
+    catchup=False,
+    tags=["databricks"],
+    doc_md=docs,
+):
 
     # starts a terminated cluster
     python_start_cluster = PythonOperator(
@@ -79,7 +83,7 @@ with DAG(
         }
     )
 
-    start, finish = [EmptyOperator(task_id=tid) for tid in ['start', 'finish']]
+    start, finish = [EmptyOperator(task_id=tid) for tid in ["start", "finish"]]
 
     with TaskGroup("dependencies") as g4:
         # restarts a cluster

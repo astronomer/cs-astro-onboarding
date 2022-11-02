@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+import pendulum
+from datetime import timedelta
 
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
@@ -13,19 +14,19 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
 }
 
-with DAG(dag_id='external_task_sensor_v2',
-         start_date=datetime(2022, 5, 1),
-         schedule_interval='0 10 * * Fri',  # At 10:00 on Friday
-         max_active_runs=3,
-         default_args=default_args,
-         tags=['cross dag dependencies'],
-         description='''
-             This DAG demonstrates the usage of ExternalTaskSensor. The example holds 2 DAGs:
-             1. external_task_sensor (this DAG): it waits until a task is completed in the upstream DAG
-             1. trigger_controller_dag: the upstream DAG.
-
-         ''',
-         ) as dag:
+with DAG(
+    dag_id='external_task_sensor_v2',
+    start_date=pendulum.datetime(2022, 5, 1, tz='UTC'),
+    schedule='0 10 * * Fri',  # At 10:00 on Friday
+    max_active_runs=3,
+    default_args=default_args,
+    tags=['cross dag dependencies'],
+    description='''
+        This DAG demonstrates the usage of ExternalTaskSensor. The example holds 2 DAGs:
+        1. external_task_sensor (this DAG): it waits until a task is completed in the upstream DAG
+        1. trigger_controller_dag: the upstream DAG.
+     ''',
+):
 
     check_task_completion = ExternalTaskSensor(
         task_id="check_task_completion",

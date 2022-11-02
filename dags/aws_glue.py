@@ -1,11 +1,14 @@
-docs = """
-    The operators use aws_default connection - make sure to add it, see docs:
-    https://airflow.apache.org/docs/apache-airflow-providers-amazon/stable/connections/aws.html
+docs = '''
+    The operators use `aws_default` connection - make sure to add it, see 
+    [docs](https://airflow.apache.org/docs/apache-airflow-providers-amazon/stable/connections/aws.html).
+    
     Additionally, you need to create a role with putobject/getobject access to the bucket,
-    as well as the glue service role, see docs here: https://docs.aws.amazon.com/glue/latest/dg/create-an-iam-role.html
-"""
+    as well as the glue service role, 
+    see docs [here](https://docs.aws.amazon.com/glue/latest/dg/create-an-iam-role.html).
+'''
 
-from datetime import datetime, timedelta
+import pendulum
+from datetime import timedelta
 from os import getenv
 
 from airflow import DAG
@@ -13,11 +16,10 @@ from airflow.decorators import task
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.providers.amazon.aws.operators.glue import GlueJobOperator
 from airflow.providers.amazon.aws.operators.glue_crawler import GlueCrawlerOperator
-from airflow.providers.amazon.aws.operators.s3_copy_object import S3CopyObjectOperator
+from airflow.providers.amazon.aws.operators.s3 import S3CopyObjectOperator
 from airflow.providers.amazon.aws.operators.s3 import S3DeleteObjectsOperator
 from airflow.providers.amazon.aws.sensors.glue import GlueJobSensor
 from airflow.providers.amazon.aws.sensors.glue_crawler import GlueCrawlerSensor
-
 
 
 GLUE_EXAMPLE_S3_BUCKET = getenv('GLUE_EXAMPLE_S3_BUCKET', 'astro-onboarding')
@@ -65,13 +67,13 @@ datasource.toDF().write.format('csv').mode("append").save('s3://{GLUE_EXAMPLE_S3
 
 
 default_args = {
-        'owner': 'cs',
-        'depends_on_past': False,
-        'email_on_failure': False,
-        'email_on_retry': False,
-        'retries': 4,
-        'retry_delay': timedelta(seconds=15),
-    }
+    'owner': 'cs',
+    'depends_on_past': False,
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 4,
+    'retry_delay': timedelta(seconds=15),
+}
 
 
 @task(task_id='setup_upload_artifacts_to_s3')
@@ -87,13 +89,13 @@ def upload_artifacts_to_s3():
 
 with DAG(
     dag_id='aws_glue',
-    schedule_interval=None,
-    start_date=datetime(2022, 6, 28),
+    schedule=None,
+    start_date=pendulum.datetime(2022, 6, 28, tz='UTC'),
     default_args=default_args,
     tags=['aws glue', 'aws s3'],
     catchup=False,
     doc_md=docs,
-) as glue_dag:
+):
 
     setup_upload_artifacts_to_s3 = upload_artifacts_to_s3()
 

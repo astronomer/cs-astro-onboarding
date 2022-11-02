@@ -1,4 +1,4 @@
-from datetime import datetime
+import pendulum
 from airflow.models import DAG
 
 from airflow.operators.dummy import DummyOperator
@@ -15,14 +15,15 @@ from airflow.providers.google.cloud.operators.bigquery import (
 
 from airflow.providers.google.cloud.transfers.bigquery_to_bigquery import BigQueryToBigQueryOperator
 
+
 project_id = "astronomer-success"
 dataset_id = "public_data"
 
 with DAG(
     dag_id="bigquery_example_dag",
-    schedule_interval="@daily",
-    start_date=datetime(2016, 12, 31), #data starts 1/1/2014, but just using a week for quick poc
-    end_date=datetime(2016, 12, 31),
+    schedule="@daily",
+    start_date=pendulum.datetime(2016, 12, 31, tz="UTC"),  # data starts 1/1/2014, but just using a week for quick poc
+    end_date=pendulum.datetime(2016, 12, 31, tz="UTC"),
     max_active_runs=1,
     template_searchpath="/usr/local/airflow/include/bigquery_example_dag/",
     tags=["bigquery"],
@@ -30,9 +31,9 @@ with DAG(
     default_args={
         "owner": "cs"
     },
-) as dag:
+):
 
-    start, finish = [DummyOperator(task_id=tid) for tid in ['start', 'finish']]
+    start, finish = [DummyOperator(task_id=tid) for tid in ["start", "finish"]]
 
     # Deletes existing Dataset
     delete_dataset = BigQueryDeleteDatasetOperator(

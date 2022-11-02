@@ -1,4 +1,4 @@
-from datetime import datetime
+import pendulum
 
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
@@ -7,15 +7,15 @@ from include.external_deployment.xd_external_task_sensor import ExternalDeployme
 
 with DAG(
     dag_id='xdeployment_externaltasksensor',
-    start_date=datetime(2022, 7, 27),
-    schedule_interval="0 13-22 * * 1-5",
+    start_date=pendulum.datetime(2022, 7, 27, tz='UTC'),
+    schedule="0 13-22 * * 1-5",
     template_searchpath="/usr/local/airflow/include/xdeployment_externaltasksensor/",
     tags=["REST API", "Astronomer", "Deferrable Operator"],
     description=f"""
         Checks a seperate astronomer deployment to see if a task has completed
     """,
     catchup=False
-) as dag:
+):
 
     start, finish = [EmptyOperator(task_id=tid) for tid in ['start', 'finish']]
 
@@ -25,4 +25,3 @@ with DAG(
     )
 
     start >> t >> finish
-

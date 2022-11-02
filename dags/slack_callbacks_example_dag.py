@@ -1,15 +1,16 @@
-import time
+import pendulum
 import sys
+import time
+from datetime import timedelta
 from functools import partial
 
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
+
 import include.slack_callbacks as slack_callbacks
 
-
-from datetime import datetime, timedelta
 
 def task_that_fails():
     time.sleep(5)
@@ -20,27 +21,27 @@ def task_that_succeeds():
     print("Done.")
 
 default_args = {
-        'owner': 'cs',
-        "on_success_callback": partial(
-            slack_callbacks.success_callback,
-            http_conn_id='slack_demo'
-        ),
-        "on_failure_callback": partial(
-            slack_callbacks.failure_callback,
-            http_conn_id='slack_demo'
-        ),
-        "on_retry_callback": partial(
-            slack_callbacks.retry_callback,
-            http_conn_id='slack_demo'
-        ),
-        "sla": timedelta(seconds=10),
-    }
+    "owner": 'cs',
+    "on_success_callback": partial(
+        slack_callbacks.success_callback,
+        http_conn_id='slack_demo'
+    ),
+    "on_failure_callback": partial(
+        slack_callbacks.failure_callback,
+        http_conn_id='slack_demo'
+    ),
+    "on_retry_callback": partial(
+        slack_callbacks.retry_callback,
+        http_conn_id='slack_demo'
+    ),
+    "sla": timedelta(seconds=10),
+}
 
 with DAG(
     dag_id="slack_callbacks_example_dag",
-    start_date=datetime(2022, 6, 13),
-    end_date=datetime(2022, 6, 15),
-    schedule_interval="@daily",
+    start_date=pendulum.datetime(2022, 6, 13, tz='UTC'),
+    end_date=pendulum.datetime(2022, 6, 15, tz='UTC'),
+    schedule="@daily",
     default_args=default_args,
     # sla_miss only applies to scheduled DAG runs, it does not work for manually triggered runs
     # If a DAG is running for the first time and sla is missed, sla_miss will not fire on that first run
@@ -48,17 +49,15 @@ with DAG(
         slack_callbacks.sla_miss_callback,
         http_conn_id="slack_demo",
     ),
-    description='''
-        This DAG demonstrates how to use various callbacks with slack
-    ''',
+    description="This DAG demonstrates how to use various callbacks with slack.",
     catchup=True,
     tags=["slack"]
-) as dag:
+):
 
-    start, finish = [EmptyOperator(task_id=tid, on_success_callback=None, trigger_rule="all_done") for tid in ['start', 'finish']]
+    start, finish = [EmptyOperator(task_id=tid, on_success_callback=None, trigger_rule="all_done") for tid in ["start", "finish"]]
 
     success = PythonOperator(
-        task_id='long_running_task',
+        task_id="long_running_task",
         python_callable=task_that_succeeds,
         sla=timedelta(seconds=30)
     )
@@ -77,7 +76,3 @@ with DAG(
     )
 
     start >> [success, bash_sleep, fail] >> finish
-
-
-
-

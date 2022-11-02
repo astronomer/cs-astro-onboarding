@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+import pendulum
+from datetime import timedelta
 
 from airflow import DAG
 from airflow.operators.bash import BashOperator
@@ -16,34 +17,35 @@ def print_the_message(**context):
 
 
 default_args = {
-        'owner': 'cs',
-        'depends_on_past': False,
-        'email_on_failure': False,
-        'email_on_retry': False,
-        'retries': 2,
-        'retry_delay': timedelta(minutes=5),
-    }
+    'owner': 'cs',
+    'depends_on_past': False,
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 2,
+    'retry_delay': timedelta(minutes=5),
+}
 
 
-with DAG(dag_id='trigger_target_dag',
-         start_date=datetime(2022, 5, 1),
-         schedule_interval=None,
-         default_args=default_args,
-         tags=['cross dag dependencies'],
-         description='''
-             This DAG demonstrates the usage of TriggerDagRunOperator. The example holds 2 DAGs:
-             1. trigger_controller_dag: it hold TriggerDagRunOperator which triggers the 2nd DAG
-             2. trigger_target_dag (this DAG): is triggered by the TriggerDagRunOperator in the 1st DAG.
-         ''',
-         ) as dag:
+with DAG(
+        dag_id='trigger_target_dag',
+        start_date=pendulum.datetime(2022, 5, 1, tz='UTC'),
+        schedule=None,
+        default_args=default_args,
+        tags=['cross dag dependencies'],
+        description='''
+            This DAG demonstrates the usage of TriggerDagRunOperator. The example holds 2 DAGs:
+            1. trigger_controller_dag: it hold TriggerDagRunOperator which triggers the 2nd DAG
+            2. trigger_target_dag (this DAG): is triggered by the TriggerDagRunOperator in the 1st DAG.
+        ''',
+):
 
     print_with_python = PythonOperator(
-        task_id="print_with_python",
+        task_id='print_with_python',
         python_callable=print_the_message,
     )
 
     print_with_bash = BashOperator(
-        task_id="print_with_bash",
+        task_id='print_with_bash',
         bash_command='echo "Here is the message: $message"',
         env={'message': '{{ dag_run.conf["message"] if dag_run else "" }}'},
     )

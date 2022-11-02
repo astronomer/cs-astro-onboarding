@@ -1,7 +1,8 @@
+import pendulum
+
 from airflow.models import DAG
 from airflow.utils.task_group import TaskGroup
 from airflow.operators.empty import EmptyOperator
-from datetime import datetime
 
 '''clusters'''
 from airflow.providers.amazon.aws.operators.redshift_cluster import RedshiftPauseClusterOperator
@@ -26,16 +27,16 @@ s3_bucket = 'astro-onboarding'
 
 with DAG(
     dag_id="redshift_example_dag",
-    schedule_interval=None,
-    start_date=datetime(2022, 6, 13),
+    schedule=None,
+    start_date=pendulum.datetime(2022, 6, 13, tz='UTC'),
     max_active_runs=1,
-    template_searchpath='/usr/local/airflow/include/redshift_example_dag',
+    template_searchpath="/usr/local/airflow/include/redshift_example_dag",
     tags=["aws redshift"],
     catchup=True,
     default_args={
         "owner": "cs"
     },
-) as dag:
+):
 
     start, finish = [EmptyOperator(task_id=tid) for tid in ['start', 'finish']]
 
@@ -47,21 +48,21 @@ with DAG(
     '''
     with TaskGroup(group_id="cluster_start") as cluster_start:
         resume = RedshiftResumeClusterOperator(
-            task_id='resume_redshift',
+            task_id="resume_redshift",
             cluster_identifier=cluster_identifier
         )
 
         wait = RedshiftClusterSensor(
-            task_id='wait_for_cluster',
+            task_id="wait_for_cluster",
             cluster_identifier=cluster_identifier,
-            target_status='available'
+            target_status="available"
         )
 
         resume >> wait
 
     create_table_schemas = RedshiftSQLOperator(
-        task_id='create_table_schemas',
-        sql='/sql/create_table_schemas.sql'
+        task_id="create_table_schemas",
+        sql="/sql/create_table_schemas.sql"
     )
 
     '''
@@ -76,7 +77,7 @@ with DAG(
         {"table": "listing", "s3_key": "listings_pipe.txt", "delimiter": "'|'", "timeformat": "YYYY-MM-DD HH:MI:SS"},
         {"table": "sales", "s3_key": "sales_tab.txt", "delimiter": "'\\t'", "timeformat": "MM/DD/YYYY HH:MI:SS"}
     ]
-    with TaskGroup(group_id='s3_to_redshift') as s3_to_redshift:
+    with TaskGroup(group_id="s3_to_redshift") as s3_to_redshift:
         for file in files:
             S3ToRedshiftOperator(
                 task_id=f"copy_{file['table']}_to_redshift",
@@ -93,16 +94,16 @@ with DAG(
             )
 
     top_ten_buyers_by_quantity = RedshiftSQLOperator(
-        task_id='top_ten_buyers_by_quantity',
-        sql='/sql/top_ten_buyers_by_quantity.sql'
+        task_id="top_ten_buyers_by_quantity",
+        sql="/sql/top_ten_buyers_by_quantity.sql"
     )
 
     top_ten_to_s3 = RedshiftToS3Operator(
-        task_id='top_ten_to_s3',
-        s3_bucket='astro-onboarding',
-        s3_key=f'redshift_example_dag/reporting/top_ten_buyers_by_quantity_{{{{ ds }}}}_',
-        schema='public',
-        table='top_ten_buyers_by_quantity',
+        task_id="top_ten_to_s3",
+        s3_bucket="astro-onboarding",
+        s3_key=f"redshift_example_dag/reporting/top_ten_buyers_by_quantity_{{{{ ds }}}}_",
+        schema="public",
+        table="top_ten_buyers_by_quantity",
         table_as_file_name=False,
         unload_options=[
             "DELIMITER AS ','",
@@ -116,19 +117,19 @@ with DAG(
     with TaskGroup(group_id="reset_cluster") as reset_cluster:
 
         drop_all_tables = RedshiftSQLOperator(
-            task_id='drop_all_tables',
-            sql='/sql/drop_all_tables.sql'
+            task_id="drop_all_tables",
+            sql="/sql/drop_all_tables.sql"
         )
 
         pause_redshift = RedshiftPauseClusterOperator(
-            task_id='pause_redshift',
+            task_id="pause_redshift",
             cluster_identifier=cluster_identifier,
         )
 
         wait = RedshiftClusterSensor(
-            task_id='wait_for_cluster',
+            task_id="wait_for_cluster",
             cluster_identifier=cluster_identifier,
-            target_status='paused'
+            target_status="paused"
         )
 
         drop_all_tables >> pause_redshift

@@ -1,5 +1,5 @@
-import random
-from datetime import datetime, timedelta
+import pendulum
+from datetime import timedelta
 
 from airflow import DAG
 from airflow.decorators import task
@@ -7,29 +7,32 @@ from airflow.operators.bash import BashOperator
 
 
 default_args = {
-        'owner': 'cs',
-        'depends_on_past': False,
-        'email_on_failure': False,
-        'email_on_retry': False,
-        'retries': 2,
-        'retry_delay': timedelta(minutes=5),
-    }
+    'owner': 'cs',
+    'depends_on_past': False,
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 2,
+    'retry_delay': timedelta(minutes=5),
+}
 
 
-with DAG(dag_id='dynamic_task_mapping_mixed_operators',
-         start_date=datetime(2022, 5, 1),
-         schedule_interval='0 6 * * Mon',  # At 06:00 on Monday
-         max_active_runs=3,
-         default_args=default_args,
-         tags=['dynamic task mapping', 'XComs'],
-         description='''
-             This DAG demonstrates dynamic task mapping based on the result of the upstream task, 
-             and combining both TaskFlow API and non-TaskFlow API operators.
-         ''',
-         ) as dag:
+with DAG(
+    dag_id='dynamic_task_mapping_mixed_operators',
+    start_date=pendulum.datetime(2022, 5, 1, tz='UTC'),
+    schedule='0 6 * * Mon',  # At 06:00 on Monday
+    max_active_runs=3,
+    default_args=default_args,
+    tags=['dynamic task mapping', 'XComs'],
+    description='''
+        This DAG demonstrates dynamic task mapping based on the result of the upstream task, 
+        and combining both TaskFlow API and non-TaskFlow API operators.
+    ''',
+):
 
     @task
     def get_files():
+        import random
+
         return [f"file_{nb}" for nb in range(random.randint(2, 4))]
 
 
