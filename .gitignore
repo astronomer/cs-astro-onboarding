@@ -7,3 +7,4 @@ include/__pycache__/
 plugins/__pycache__/
 dags/__pycache__/
 include/external_deployment/__pycache__/
+venv/
