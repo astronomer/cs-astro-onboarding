@@ -24,6 +24,7 @@ from airflow import DAG
 from airflow.decorators import task
 
 from airflow.providers.databricks.hooks.databricks import DatabricksHook
+from airflow.providers.microsoft.mssql.operators.mssql import MsSqlOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.providers.salesforce.hooks.salesforce import SalesforceHook
 from airflow.providers.sftp.hooks.sftp import SFTPHook
@@ -101,6 +102,10 @@ with DAG(
     )
 
     ## MSSQL
+    MsSqlOperator.partial(
+        task_id='test_mssql_connection',
+        sql='SELECT 1;'
+    ).expand(mssql_conn_id=get_conns_by_conn_type(conn_type='mssql'))
 
     ## SSH
     @task()
