@@ -89,8 +89,14 @@ with DAG(
 
     ### Postgres
     PostgresOperator.partial(
-        task_id='test_posgres_connection',
+        task_id='test_postgres_connection',
         sql='SELECT 1;'
     ).expand(
         postgres_conn_id=get_conns_by_conn_type(conn_type='postgres')
     )
+
+    ## MSSQL
+
+    ## SSH
+
+    ## SFTP
