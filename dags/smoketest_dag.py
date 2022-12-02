@@ -40,7 +40,7 @@ with DAG(
     schedule=None,
     template_searchpath="/usr/local/airflow/include/smoketest_dag/",
     doc_md=__doc__,
-    tags=["snowflake", "databricks", "salesforce", "postgres"],
+    tags=["snowflake", "databricks", "salesforce", "postgres", "ssh", "sftp", "mssql"],
 ):
 
     ### Snowflake
