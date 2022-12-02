@@ -3,25 +3,28 @@
 This DAG is used to test connections to external services
 ___
 ## Steps to Use
-1. Create default connections for external services (i.e. `snowflake_default`) see connection documentation links below
-to learn more about default connection id naming
+1. Create connections for external services (i.e. `snowflake_default`) see connection documentation links below
+to learn more about how to set up different connection types
 2. Unpause the DAG and test connections that you need.
 
 Services included:
-- [databricks](https://airflow.apache.org/docs/apache-airflow-providers-databricks/stable/connections/databricks.html): conn_id is `databricks_default'
-- [salesforce](https://airflow.apache.org/docs/apache-airflow-providers-salesforce/stable/connections/salesforce.html): conn_id is 'salesforce_default'
-- [snowflake](https://airflow.apache.org/docs/apache-airflow-providers-snowflake/stable/connections/snowflake.html): conn_id is 'snowflake_default'
+- [databricks](https://airflow.apache.org/docs/apache-airflow-providers-databricks/stable/connections/databricks.html)
+- [salesforce](https://airflow.apache.org/docs/apache-airflow-providers-salesforce/stable/connections/salesforce.html)
+- [snowflake](https://airflow.apache.org/docs/apache-airflow-providers-snowflake/stable/connections/snowflake.html)
 '''
-import sys
+
 import logging
+import sys
 
 from airflow import DAG
 from airflow.decorators import task
+
 from airflow.providers.databricks.hooks.databricks import DatabricksHook
 from airflow.providers.salesforce.hooks.salesforce import SalesforceHook
 from airflow.providers.snowflake.operators.snowflake import SnowflakeOperator
 
 from datetime import datetime
+from include.smoketest_dag.utils import get_conns_by_conn_type
 
 with DAG(
     dag_id="smoketest_dag",
@@ -33,10 +36,11 @@ with DAG(
 ):
 
     ### Snowflake
-    SnowflakeOperator(
+    SnowflakeOperator.partial(
         task_id='test_snowflake_connection',
         sql='SELECT 1;',
-        snowflake_conn_id="snowflake_default"
+    ).expand(
+        snowflake_conn_id=get_conns_by_conn_type(conn_type='snowflake')
     )
 
     ### Databricks
@@ -58,7 +62,7 @@ with DAG(
             logging.info(message)
             return status, message
 
-    test_databricks_connection(conn_id="databricks_default")
+    test_databricks_connection.expand(conn_id=get_conns_by_conn_type(conn_type='databricks'))
 
     ### Salesforce
     @task()
@@ -79,4 +83,5 @@ with DAG(
             logging.info(message)
             return status, message
 
-    test_salesforce_connection(conn_id="salesforce_default")
+    test_salesforce_connection.expand(conn_id=get_conns_by_conn_type(conn_type='salesforce'))
+
