@@ -11,6 +11,7 @@ Services included:
 - [databricks](https://airflow.apache.org/docs/apache-airflow-providers-databricks/stable/connections/databricks.html)
 - [salesforce](https://airflow.apache.org/docs/apache-airflow-providers-salesforce/stable/connections/salesforce.html)
 - [snowflake](https://airflow.apache.org/docs/apache-airflow-providers-snowflake/stable/connections/snowflake.html)
+- [postgres](https://airflow.apache.org/docs/apache-airflow-providers-postgres/stable/connections/postgres.html)
 '''
 
 import logging
@@ -20,6 +21,7 @@ from airflow import DAG
 from airflow.decorators import task
 
 from airflow.providers.databricks.hooks.databricks import DatabricksHook
+from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.providers.salesforce.hooks.salesforce import SalesforceHook
 from airflow.providers.snowflake.operators.snowflake import SnowflakeOperator
 
@@ -32,7 +34,7 @@ with DAG(
     schedule=None,
     template_searchpath="/usr/local/airflow/include/smoketest_dag/",
     doc_md=__doc__,
-    tags=["snowflake", "databricks", "salesforce"],
+    tags=["snowflake", "databricks", "salesforce", "postgres"],
 ):
 
     ### Snowflake
@@ -85,3 +87,10 @@ with DAG(
 
     test_salesforce_connection.expand(conn_id=get_conns_by_conn_type(conn_type='salesforce'))
 
+    ### Postgres
+    PostgresOperator.partial(
+        task_id='test_posgres_connection',
+        sql='SELECT 1;'
+    ).expand(
+        postgres_conn_id=get_conns_by_conn_type(conn_type='postgres')
+    )
