@@ -12,6 +12,9 @@ Services included:
 - [salesforce](https://airflow.apache.org/docs/apache-airflow-providers-salesforce/stable/connections/salesforce.html)
 - [snowflake](https://airflow.apache.org/docs/apache-airflow-providers-snowflake/stable/connections/snowflake.html)
 - [postgres](https://airflow.apache.org/docs/apache-airflow-providers-postgres/stable/connections/postgres.html)
+- [mssql](https://airflow.apache.org/docs/apache-airflow-providers-microsoft-mssql/stable/connections/mssql.html)
+- [sftp](https://airflow.apache.org/docs/apache-airflow-providers-sftp/stable/connections/sftp.html)
+- [ssh](https://airflow.apache.org/docs/apache-airflow/1.10.13/howto/connection/ssh.html)
 '''
 
 import logging
@@ -23,6 +26,8 @@ from airflow.decorators import task
 from airflow.providers.databricks.hooks.databricks import DatabricksHook
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.providers.salesforce.hooks.salesforce import SalesforceHook
+from airflow.providers.sftp.hooks.sftp import SFTPHook
+from airflow.providers.ssh.hooks.ssh import SSHHook
 from airflow.providers.snowflake.operators.snowflake import SnowflakeOperator
 
 from datetime import datetime
@@ -98,5 +103,21 @@ with DAG(
     ## MSSQL
 
     ## SSH
+    @task()
+    def test_ssh_connection(conn_id):
+        hook = SSHHook(ssh_conn_id=conn_id)
+        ssh = hook.get_conn()
+        stdin, stdout, stderr = ssh.exec_command('hostname;w')
+        for line in stdout:
+            print(line)
+
+    test_ssh_connection.expand(conn_id=get_conns_by_conn_type(conn_type='ssh'))
 
     ## SFTP
+    @task()
+    def test_sftp_connection(conn_id):
+        hook = SFTPHook(conn_id)
+        status, msg = hook.test_connection()
+        print(status, msg)
+
+    test_sftp_connection.expand(conn_id=get_conns_by_conn_type(conn_type='sftp'))
